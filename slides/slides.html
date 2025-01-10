@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>A Very Gentle Introduction to</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="  Mauricio Bucca   github.com/mebucca   mebucca@uc.cl" />
+    <script src="libs/header-attrs-2.27/header-attrs.js"></script>
+    <link rel="stylesheet" href="gentle-r.css" type="text/css" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# A Very Gentle Introduction to
+]
+.subtitle[
+## Bayesian Data Analysis in RStan
+]
+.author[
+### <br> Mauricio Bucca <br> <a href="https://github.com/mebucca">github.com/mebucca</a> <br> <a href="mailto:mebucca@uc.cl" class="email">mebucca@uc.cl</a>
+]
+.date[
+### 10 January, 2025
+]
+
+---
+
+
+
+
+class: inverse, center, middle
+
+# Introduction
+
+---
+## What is Bayesian Data Analysis?
+
+.pull-left[
+![random](https://substackcdn.com/image/fetch/w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbdd83762-267e-4db5-b583-44302ae979a1_500x500.jpeg)
+]
+
+--
+
+.pull-right[
+
+&lt;br&gt;
+
+- A probabilistic framework for **updating beliefs** based on evidence.
+
+- In Bayesian analysis, **parameters are treated as probability distributions** rather than fixed values.
+
+  - Uncertainty reflects subjective belief and heterogeneity in the system being modeled.
+
+  - Contrasts with frequentist methods, which assume parameters are fixed but unknown, while parameter estimates are random due to sampling.
+
+]
+
+---
+## Key Features of Bayesian Analysis
+
+.pull-left[
+![why](https://media.licdn.com/dms/image/v2/C5622AQF63CN9R7eAiA/feedshare-shrink_2048_1536/feedshare-shrink_2048_1536/0/1662698622443?e=2147483647&amp;v=beta&amp;t=0rZ4iHNxoPrIyS60B_LPwFgq0In2vKSP8CokvV0t2do)
+]
+
+--
+
+.pull-right[
+
+&lt;br&gt;
+
+- **Uncertainty Modeling:** Provides a full probability distribution for parameters, not just point estimates.
+
+- **Flexibility:** Supports models with no closed-form solutions (e.g., hierarchical and latent variable models).
+
+- **Intuitive Inference:** Allows for easy interpretation of credible intervals (e.g., "There is a 95% probability that this parameter lies within this range").
+
+- **Prior Information:** Allows incorporation of prior knowledge or expert opinion into the analysis.
+
+]
+
+---
+class: inverse, center, middle
+
+# Background 
+
+---
+## Thomas Bayes
+.middle[.center[![bayes](tbayes.png)]]
+
+---
+## Conditional probability
+
+The probability of `\(A\)` given `\(B\)` is defined as:
+
+$$\mathbb{P}(A \mid B) = \frac{\mathbb{P}(A,B)}{\mathbb{P}(B)} \quad \quad \quad \quad \quad $$
+
+&lt;br&gt;
+--
+
+.center[
+&lt;img src="cond1.png" width="40%"&gt;
+]
+
+
+---
+## Conditional probability
+
+The probability of `\(B\)` given `\(A\)` is defined as:
+
+`$$\mathbb{P}(B \mid A) = \frac{\mathbb{P}(A,B)}{\mathbb{P}(A)} \quad \quad \quad \quad \quad$$`
+
+&lt;br&gt;
+--
+
+.center[
+&lt;img src="cond2.png" width="40%"&gt;
+]
+
+
+---
+## Conditional probability
+
+Therefore, if the probability of `\(A\)` given `\(B\)` is defined as:
+
+`$$\mathbb{P}(A \mid B) = \frac{\mathbb{P}(A,B)}{\mathbb{P}(B)} \quad \quad \quad \quad \quad (1)$$`
+
+&lt;br&gt;
+--
+
+and the probability of `\(B\)` given `\(A\)` is defined as:
+
+`$$\mathbb{P}(B \mid A) = \frac{\mathbb{P}(A,B)}{\mathbb{P}(A)} \quad \quad \quad \quad \quad (2)$$`
+&lt;br&gt;
+--
+
+Then, rearranging (2) we obtain:
+
+`$$\mathbb{P}(A,B) = \mathbb{P}(B \mid A)\mathbb{P}(A) \quad \quad \quad \quad  (3)$$`
+&lt;br&gt;
+--
+
+And replacing (3) in (1) gives:
+
+`$$\mathbb{P}(A \mid B) = \frac{\mathbb{P}(B \mid A)\mathbb{P}(A)}{\mathbb{P}(B)} \quad \quad \quad \quad \quad$$`
+
+---
+## Bayes' Theorem
+
+Thus, if
+
+$$\mathbb{P}(A \mid B) = \frac{\mathbb{P}(B \mid A)\mathbb{P}(A)}{\mathbb{P}(B)} \quad \quad \quad \quad \quad $$
+
+&lt;br&gt;
+Rearranging the expression, we find...
+
+&lt;br&gt;
+--
+
+**Bayes' Theorem:**
+
+.full-width[.content-box-primary[
+`$$\color{white}{\mathbb{P}(B \mid A) = \frac{\mathbb{P}(A \mid B)\mathbb{P}(B)}{\mathbb{P}(A)} \quad \quad \quad \quad \quad}$$`
+]
+]
+
+---
+## The usual disease testing example
+
+&lt;br&gt;
+
+
+.pull-left[
+
+- 1% of the population has a certain disease.
+
+- The test is 99% accurate for both true positives and true negatives.
+
+]
+
+
+.pull-right[
+
+![test](https://scontent.fscl10-1.fna.fbcdn.net/v/t1.6435-9/102813638_919897571770525_4415407308563199923_n.jpg?_nc_cat=105&amp;ccb=1-7&amp;_nc_sid=127cfc&amp;_nc_eui2=AeGDaa6Q0b8f7p9m-JDpRiQYGSMWnIRZoSEZIxachFmhIYJqXWem21OM6cW-zvwKmX0&amp;_nc_ohc=6XpxdIzHWbgQ7kNvgEtab-r&amp;_nc_zt=23&amp;_nc_ht=scontent.fscl10-1.fna&amp;_nc_gid=AoCqc5if5NeIC2lm_GlcXKx&amp;oh=00_AYAQ9W5hoPYfnmtTJF85BODd-N_-_9jZz4-MTh1FslR29A&amp;oe=67A292E9)
+
+]
+
+&lt;br&gt;
+--
+
+**Question:** If a person tests positive, what is the probability they have the disease?
+
+---
+## Applying Bayes' Theorem
+
+We seek: `\(P( D=\text{yes} |T=\text{+})\)`
+
+&lt;br&gt;
+--
+
+According to the Bayes' Theorem:
+
+
+$$
+P( D=\text{yes} |T=\text{+}) = \frac{P(T=\text{+}| D=\text{yes}) \times P(D=\text{yes})}{P(T=\text{+})}
+$$
+
+&lt;br&gt;
+--
+
+By the law of total probability we can expand the denominator ...
+
+
+$$
+P(D=\text{yes}|T=\text{+}) = \frac{P(T=\text{+}|D=\text{yes}) \cdot P(D=\text{yes})}{P(T=\text{+}|D=\text{yes}) \cdot P(D=\text{yes}) + P(T=\text{+}|D=\text{no}) \cdot P(D=\text{no})}
+$$
+&lt;br&gt;
+--
+Using the information we have we obtain...
+
+- Disease prevalence: `\(P(D=\text{yes}) = 0.01\)`.
+- True positive rate: `\(P(T=\text{+}| D=\text{yes}) = 0.99\)`.
+- True negative rate: `\(P(T=\text{-}| D=\text{no}) = 0.99\)`.
+
+
+
+---
+## Applying Bayes' Theorem
+
+&lt;br&gt;
+Denominator: 
+
+$$
+`\begin{split}
+P(T=\text{+}) &amp;= \\
+&amp;= P(T=\text{+}|D=\text{yes}) \cdot P(D=\text{yes}) + P(T=\text{+}|D=\text{no}) \cdot P(D=\text{no}) \\
+&amp;= 0.99 \times 0.01 + 0.01 \times 0.99 = 0.0198
+\end{split}`
+$$
+
+&lt;br&gt;
+--
+
+Thus,
+
+$$
+P(D=\text{yes}|T=\text{+}) = \frac{0.99 \times 0.01}{0.0198} \approx 0.50
+$$
+
+&lt;br&gt;
+
+- Despite the test's accuracy, only **50%** of positive results indicate the disease.
+
+- The low prior probability (prevalence) strongly impacts the posterior probability.
+
+
+---
+class: inverse, center, middle
+
+# Frequentist &amp; Bayesian estimation
+
+
+---
+##  A "true" model
+
+&lt;br&gt;
+
+- To illustrate Frequentist &amp; Bayesian Regression Modeling we will play god and generate data according to a "true" data generatin process (DGP)
+
+--
+
+.pull-left[
+
+![dgp](https://media.tacdn.com/media/attractions-splice-spp-674x446/12/6a/2f/f3.jpg)
+
+]
+
+.pull-right[
+
+DGP: 
+
+- `\(y_i \sim \text{Normal}(\overbrace{\beta_0 + \beta_1 x_i}^{\mu_i}, \overbrace{\delta_0 + \delta x_i}^{\sigma_i})\)`
+
+- `\(\beta_0 = 0.5, \quad \beta_1 = 1.1\)`
+
+- `\(\delta_0 = 1 \quad \delta_1 = 0.4\)`
+
+]
+
+---
+##  A "true" model
+
+.pull-left[
+
+
+
+
+
+
+``` r
+x    &lt;- rnorm(n=10^5,mean=0,sd=1) 
+g    &lt;- sample(c(0,1), size=10^5, replace=T)
+beta0  &lt;- 0.5; beta1 &lt;- 1.1
+delta0 &lt;- 1; delta1 &lt;- 0.4
+mu     &lt;- beta0 + beta1*x 
+sigma  &lt;- delta0 + delta1*g 
+y    &lt;- rnorm(n=10^5,mean=mu,sd=sigma)
+```
+
+
+```
+## # A tibble: 100,000 × 3
+##         x     g      y
+##     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+##  1 -1.04      1 -1.41 
+##  2 -1.05      0 -0.503
+##  3  1.60      0  2.85 
+##  4 -1.79      0 -1.81 
+##  5  0.653     1  0.483
+##  6 -0.406     0 -0.274
+##  7  0.273     0  1.15 
+##  8  0.389     1  0.670
+##  9  2.10      1  3.58 
+## 10 -1.07      0 -0.208
+## # ℹ 99,990 more rows
+```
+]
+
+--
+
+.pull-right[
+![](slides_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+] 
+
+---
+class: inverse, center, middle
+
+# Frequentist Estimation
+
+---
+# Frequentist Estimation
+
+.bold[Maximum likelihood estimation:]
+
+What combination of values `\(\boldsymbol{\theta}: \{\beta_0, \beta_1, \sigma\}\)` is the most plausible ("likely") given the observed data?
+
+MLE formalizes this question. Steps:
+
+--
+
+1) Decide on the underlying distribution generating the data. In this case, we can assume:
+
+   * Each observation `\(x_{i} \sim \text{Normal}(\mu_i = \beta_0 + \beta_1 x_i, \sigma)\)`, where X's are `\(iid\)`.
+
+--
+
+2) Write a function to quantify the plausibility of different parameter values. This function is called the .bold[likelihood function]:
+
+   * `\(\text{Likelihood}(\boldsymbol{\theta} \mid \text{Data}) = \mathbb{P}(\text{Data} : \{0.34, 1.07, 1.83, \dots, x_{n} \} \mid \boldsymbol{\theta})\)`
+
+&lt;br&gt;
+--
+
+Thus, the MLE estimator is this particular case is given by:
+
+.content-box-primary[
+`$$\color{white}{
+\hat{\boldsymbol{\theta}}_{MLE} = \underset{\boldsymbol{\theta}}{\arg\max} \prod_{i=1}^{n} \frac{1}{\sqrt{2\pi\sigma^{2}}} e^{- \frac{(y_{i} - \mathbf{\mu}_{i})^{2}}{2\sigma^{2}}}}$$`
+]
+
+
+---
+# Frequentist Estimation
+
+
+.bold[Maximum likelihood estimation:]
+
+.pull-left[
+![](slides_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+
+- Surface shows how different parameter combinations `\((\beta_0, \beta_1)\)` result in different likelihoods.
+
+- The *MLE* corresponds to the highest point on the surface.
+
+- Maximization can be closed-form or algorithmic (e.g., Newton-Raphson).
+
+]
+
+
+---
+## Frequentist Estimation
+
+
+``` r
+our_lm_mle &lt;- glm(y ~ x, family="gaussian", data=sim_data) 
+print(summary(our_lm_mle)) 
+```
+
+```
+## 
+## Call:
+## glm(formula = y ~ x, family = "gaussian", data = sim_data)
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 0.499582   0.003856   129.6   &lt;2e-16 ***
+## x           1.101689   0.003859   285.5   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for gaussian family taken to be 1.487021)
+## 
+##     Null deviance: 269877  on 99999  degrees of freedom
+## Residual deviance: 148699  on 99998  degrees of freedom
+## AIC: 323469
+## 
+## Number of Fisher Scoring iterations: 2
+```
+
+---
+## Frequentist Estimation
+
+.pull-left[
+![](slides_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+]
+
+--
+
+.pull-right[
+
+&lt;br&gt;
+
+- The true parameters `\(\boldsymbol{\theta}: \{\beta_0, \beta_1, \sigma\}\)` are unknown and fixed.
+
+- The parameters' estimates  `\(\boldsymbol{\hat{\theta}}: \{\hat{\beta_0}, \hat{\beta_1}, \hat{\sigma}\}\)` are random because the are estimated on a random sample ("sampling distribution"). 
+
+]
+
+
+
+
+---
+class: inverse, center, middle
+
+# Bayesian Estimation
+
+---
+# Bayesian Estimation
+
+
+.pull-left[
+![bayes_meme](meme_bayes.png)
+]
+
+--
+
+.pull-right[
+
+- While frequentist estimation is based on the probability of the data for a given fixed value of the parameter, Bayesian estimation directly addresses the .bold[probability of different parameter values given the observed data].
+
+- Hence, in Bayesian estimation parameters are treated as probability distribution.
+
+- Randomness of parameters reflect subjective belief and heterogeneity in the system being modeled.
+
+
+]
+
+
+---
+# Bayesian Estimation
+
+
+&lt;br&gt;
+
+- Bayes’ theorem provides a probabilistic framework to estimate parameters ( `\(\theta\)` )  based on observed data.
+
+- We want to know what is the probability associated to different possible values of a parameter: `\(P(\theta \mid \text{Data})\)`
+
+--
+
+- We can use the Bayes' Theorem to get what we want:
+
+&lt;br&gt;
+
+$$
+P(\theta \mid \text{Data}) = \frac{P(\text{Data} \mid \theta) P(\theta)}{P(\text{Data})}
+$$
+---
+# Bayesian estimation
+
+&lt;br&gt;
+
+- Bayes’ theorem provides a probabilistic framework to estimate parameters ( `\(\theta\)` )  based on observed data.
+
+- We want to know what is the probability associated to different possible values of a parameter: `\(P(\theta \mid \text{Data})\)`
+
+- We can use the Bayes' Theorem to get what we want:
+
+
+&lt;br&gt;
+
+$$
+`\begin{split}
+P(\theta \mid \text{Data}) &amp;= \frac{P(\text{Data} \mid \theta) P(\theta)}{P(\text{Data})} \\ \\
+&amp;= \frac{P(\text{Data} \mid \theta) P(\theta)}{\int_{\theta} P(\text{Data} \mid \theta) P(\theta) d\theta} \\
+\end{split}`
+$$
+--
+ 
+Where:
+
+- The integral is taken over the entire parameter space `\(\boldsymbol\theta: (\beta_0, \beta_1, \sigma)\)`.  
+
+- This integral ensures that `\(P(\theta \mid \text{Data})\)` sums to 1, forming a proper probability distribution.  
+
+
+---
+# Bayesian Estimation
+
+&lt;br&gt;
+
+$$
+P(\theta \mid \text{Data}) = \frac{P(\text{Data} \mid \theta) P(\theta)}{P(\text{Data})} 
+$$
+
+
+---
+# Bayesian Estimation
+
+&lt;br&gt;
+
+$$
+\overbrace{P(\theta \mid \text{Data})}^{\color{red}{\text{POSTERIOR}}} = 
+\frac{\overbrace{P(\text{Data} \mid \theta)}^{\color{blue}{\text{LIKELIHOOD  }}} \overbrace{P(\theta)}^{\color{green}{\text{  PRIOR}}}}
+{\underbrace{P(\text{Data})}_{\color{purple}{\text{EVIDENCE}}}}
+$$
+
+&lt;br&gt;
+--
+
+
+- **Parameters of interest**: `\(\theta = (\beta_0, \beta_1, \sigma)\)`
+
+- **Likelihood**: how compatible the data is with `\(\theta\)`.
+
+- **Prior**: Encodes beliefs about `\(\theta\)` (i.e., `\(\beta_0\)`, `\(\beta_1\)`, and `\(\sigma\)`) before observing the data.
+
+- **Evidence**:  Normalizing constant, computed as the integral over all possible parameter values.
+
+- **Posterior**:  Updated beliefs about `\(\theta\)` after observing data, combining prior information and likelihood.
+  
+
+
+
+
+---
+# Bayesian Estimation
+
+
+.pull-left[
+
+`$$\overbrace{P(\theta \mid \text{Data})}^{\color{red}{\text{POSTERIOR}}} = 
+\frac{\overbrace{P(\text{Data} \mid \theta)}^{\color{blue}{\text{LIKELIHOOD  }}} \overbrace{P(\theta)}^{\color{green}{\text{  PRIOR}}}}
+{\underbrace{P(\text{Data})}_{\color{purple}{\text{EVIDENCE}}}}$$`
+  
+]
+
+--
+
+.img-right2[
+
+![evidence2](https://substackcdn.com/image/fetch/w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Febdaebfa-8a7c-480e-a4c8-974bee54a498_500x672.jpeg)
+  
+]
+
+- Evidence is usually unfeasible to estimate: no closed-form solution and/or high-dimensional spaces.
+
+- Except in the case of **conjugate priors**
+  
+---
+class: inverse, center, middle
+
+# Computing posterior distribution
+
+
+---
+# Sampling from the Posterior
+
+&lt;br&gt;
+
+- Computing the posterior `\(P(\theta | \text{data})\)` exactly is often infeasible because `\(P(\text{data})\)` is hard to calculate.
+
+--
+
+- Instead, we sample values of `\(\theta\)` using:
+
+$$
+P(\theta | \text{data}) \propto P(\text{data} | \theta) P(\theta)
+$$
+
+- Methods like **MCMC** approximate the posterior by sampling from the unnormalized posterior.
+
+- These algorithms ensure that sampled values are proportional to `\(P(\text{data} \mid \theta) P(\theta)\)` without needing to compute `\(P(\text{data})\)`.
+
+
+---
+# Markov Chain Monte Carlo (MCMC)
+
+&lt;br&gt;
+
+**Overview of the MCMC process:**
+
+&lt;br&gt;
+
+- Define the **likelihood** `\(P(\text{data} | \theta)\)` and **prior** `\(P(\theta)\)`.
+
+-  MCMC generate a chain of values for `\(\theta\)` that are "weighted" by 
+`\(P(\text{data} \mid \theta) P(\theta)\)`
+
+- Values of `\(\theta\)` that make the data more probable (high likelihood) and align with the prior (high prior probability) are more likely to be sampled.
+
+---
+# Markov Chain Monte Carlo &amp; Metropolist-Hasting
+
+.pull-left[
+**MCMC**
+![mcmc1](mcmc.png)
+]
+
+--
+
+.pull-right[
+**MCMC + Metropolis-Hasting**
+![metropolis](http://blog.stata.com/wp-content/uploads/2016/11/animation3.gif)
+]
+
+---
+# Hamiltonian Monte Carlo (HMC)
+
+- There are different methods to sample from the posterior.
+
+- In particular, **Stan** (the software we will use) relies on HMC for sampling from posterior distributions.
+
+--
+&lt;br&gt;
+
+.pull-left[
+
+- HMC uses principles from physics to sample efficiently.
+
+- Simulate the movement of a particle in a energy landscape
+
+- Efficient exploration of posterior landscapes
+
+- Handles correlated parameters well
+
+]
+
+.pull-right[
+**Hamiltonian Monte Carlo search**
+![hmc](https://upload.wikimedia.org/wikipedia/commons/f/fa/Hamiltonian_Monte_Carlo.gif)
+]
+
+
+---
+class: inverse, center, middle
+
+# Prior choice
+
+---
+# Prior choice
+
+.pull-left[
+- A **prior distribution** represents beliefs about a parameter before observing the data.
+
+- Choice of prior affects:
+  - How much influence prior beliefs have on the posterior.
+  
+  - The robustness of results with limited data.
+
+]
+
+.pull-right[
+.img-right[
+![prior_meme](https://substackcdn.com/image/fetch/w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F1662d71d-ba77-418b-bb9e-6c12a4a83b59_577x432.jpeg)
+]
+]
+
+&lt;br&gt;&lt;br&gt;
+--
+
+
+| **Case**                | **Example Prior**                         | **Scenario**                                       |
+|--------------------------|-------------------------------------------|---------------------------------------------------|
+| **Uninformative**        | `\(P(\theta) \propto 1\)`                | No prior knowledge; let data dominate.            |
+| **Weakly Informative**   | `\(P(\theta) \sim \mathcal{N}(0, 100^2)\)` | Weak constraints on plausible values.             |
+| **Strongly Informative** | `\(P(\theta) \sim \text{Beta}(90, 10)\)`  | Domain expertise suggests strong prior belief.    |
+| **Point-Value**          | `\(P(\theta) = \delta(\theta - 5)\)`     | `\(\theta\)` is known with certainty.             |
+
+---
+# Prior choice
+
+.center[
+  .middle[
+    ![](priors.jpg)
+  ]
+]
+
+
+---
+class: inverse, center, middle
+
+# Implementation with **rstan**
+
+---
+# Rstan
+
+
+``` r
+# Data list for Stan
+data_list &lt;- list(
+  N = 10^5,
+  x = sim_data$x,
+  g = sim_data$g,
+  y = sim_data$y
+)
+
+# Fit the updated Stan model
+library(rstan)
+fit &lt;- stan(
+  file = "mymodel.stan", 
+  data = data_list, 
+  iter = 1000, 
+  chains = 3, 
+  seed = 123
+)
+```
+
+```
+## 
+## SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 1).
+## Chain 1: 
+## Chain 1: Gradient evaluation took 0.079131 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 791.31 seconds.
+## Chain 1: Adjust your expectations accordingly!
+## Chain 1: 
+## Chain 1: 
+## Chain 1: Iteration:   1 / 1000 [  0%]  (Warmup)
+## Chain 1: Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Chain 1: Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Chain 1: Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Chain 1: Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Chain 1: Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Chain 1: Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Chain 1: Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Chain 1: Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Chain 1: Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Chain 1: Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Chain 1: Iteration: 1000 / 1000 [100%]  (Sampling)
+## Chain 1: 
+## Chain 1:  Elapsed Time: 17.148 seconds (Warm-up)
+## Chain 1:                15.794 seconds (Sampling)
+## Chain 1:                32.942 seconds (Total)
+## Chain 1: 
+## 
+## SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 2).
+## Chain 2: 
+## Chain 2: Gradient evaluation took 0.003597 seconds
+## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 35.97 seconds.
+## Chain 2: Adjust your expectations accordingly!
+## Chain 2: 
+## Chain 2: 
+## Chain 2: Iteration:   1 / 1000 [  0%]  (Warmup)
+## Chain 2: Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Chain 2: Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Chain 2: Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Chain 2: Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Chain 2: Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Chain 2: Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Chain 2: Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Chain 2: Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Chain 2: Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Chain 2: Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Chain 2: Iteration: 1000 / 1000 [100%]  (Sampling)
+## Chain 2: 
+## Chain 2:  Elapsed Time: 17.553 seconds (Warm-up)
+## Chain 2:                16.533 seconds (Sampling)
+## Chain 2:                34.086 seconds (Total)
+## Chain 2: 
+## 
+## SAMPLING FOR MODEL 'anon_model' NOW (CHAIN 3).
+## Chain 3: 
+## Chain 3: Gradient evaluation took 0.007092 seconds
+## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 70.92 seconds.
+## Chain 3: Adjust your expectations accordingly!
+## Chain 3: 
+## Chain 3: 
+## Chain 3: Iteration:   1 / 1000 [  0%]  (Warmup)
+## Chain 3: Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Chain 3: Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Chain 3: Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Chain 3: Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Chain 3: Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Chain 3: Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Chain 3: Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Chain 3: Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Chain 3: Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Chain 3: Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Chain 3: Iteration: 1000 / 1000 [100%]  (Sampling)
+## Chain 3: 
+## Chain 3:  Elapsed Time: 18.659 seconds (Warm-up)
+## Chain 3:                15.62 seconds (Sampling)
+## Chain 3:                34.279 seconds (Total)
+## Chain 3:
+```
+---
+# Stan code
+
+.center[
+.middle[
+![drawing](draws.png)
+]
+]
+---
+# Posterior distribution
+
+
+``` r
+# Print results
+print(fit, pars = c("beta0", "beta1", "delta0", "delta1"))
+```
+
+```
+## Inference for Stan model: anon_model.
+## 3 chains, each with iter=1000; warmup=500; thin=1; 
+## post-warmup draws per chain=500, total post-warmup draws=1500.
+## 
+##        mean se_mean   sd 2.5% 25%  50%  75% 97.5% n_eff Rhat
+## beta0  0.50       0 0.00 0.49 0.5 0.50 0.50  0.51  1411    1
+## beta1  1.10       0 0.00 1.09 1.1 1.10 1.10  1.11  1459    1
+## delta0 1.00       0 0.00 0.99 1.0 1.00 1.00  1.01  1367    1
+## delta1 0.41       0 0.01 0.40 0.4 0.41 0.41  0.42  1015    1
+## 
+## Samples were drawn using NUTS(diag_e) at Fri Jan 10 00:19:11 2025.
+## For each parameter, n_eff is a crude measure of effective sample size,
+## and Rhat is the potential scale reduction factor on split chains (at 
+## convergence, Rhat=1).
+```
+
+---
+# Posterior distribution
+
+
+``` r4
+# Posterior distribution plot
+posterior_samples &lt;- extract(fit)
+beta1_samples &lt;- posterior_samples$beta1
+```
+
+.pull-left[
+![](slides_files/figure-html/posterior-beta1-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+
+- The **posterior distribution** shows updated beliefs about `\(\beta_1\)` after observing the data. 
+- The **credible interval** (dashed lines) gives the range where `\(\beta_1\)` lies with 95% probability.  
+
+- Unlike **confidence intervals**, credible intervals are directly interpretable as probabilities.
+
+
+]
+
+---
+### Confidence Intervals vs Credible Intervals
+
+.center[
+.middle[
+![conf](https://preview.redd.it/meme-mondays-v0-zxdz4pm6ymub1.png?width=640&amp;crop=smart&amp;auto=webp&amp;s=a2794b134df84ae8c97c23184a5a398a6535bd63)
+]
+]
+
+---
+### Confidence Intervals vs Credible Intervals
+
+&lt;br&gt;
+For a given interval -- say, `\([1.05, 1.15]\)` --, interpretation differs for Frequentist and Bayesian estimation:
+
+&lt;br&gt;
+--
+
+**95% Confidence Interval Interpretation**
+
+&gt; *"If we repeated the data collection and analysis many times, 95% of the calculated intervals would contain the true value of `\(\beta_1\)`.* 
+
+We cannot assign a probability to the true value being in this range because  `\(\beta_1\)` is a fixed number, not a random variable.
+
+&lt;br&gt;
+--
+
+**95% Credible Interval Interpretation**
+
+&gt; *"Given the observed data and our prior beliefs, there is a 95% probability that the true value of `\(\beta_1\)` lies within the interval `\([1.05, 1.15]\)`."*
+
+---
+### Diagnostics 
+
+There any many. Here is a very important one: **Trace plots**
+
+
+``` r
+library(bayesplot)
+
+# Trace plots for all parameters
+mcmc_trace(fit, pars = c("beta1")) +
+  ggtitle("Trace Plots for β1") +
+  theme_minimal()
+```
+
+![](slides_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+---
+class: inverse, center, middle
+
+
+# Materials
+
+---
+
+## Github Repo
+
+All the material from the workshop will be stored and regularly updated in the `Github` repository.
+
+&lt;br&gt;
+.center[
+
+![github](github.png)
+
+.bold[https://github.com/mebucca/bayes_workshop]
+
+]
+
+
+
+
+---
+class: inverse, center, middle
+
+
+## :: T H E :: E N D ::
+
+&lt;br&gt;
+Mauricio Bucca &lt;br&gt;
+https://mebucca.github.io/ &lt;br&gt;
+github.com/mebucca
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": true,
+"slideNumberFormat": "%current%"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
