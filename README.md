@@ -1,7 +1,7 @@
 
 # Introduction to Bayesian Modeling in Stan
 
-![hmc]([https://upload.wikimedia.org/wikipedia/commons/f/fa/Hamiltonian_Monte_Carlo.gif](https://colindcarroll.com/img/normal_leapfrog.png))
+![hmc]([https://upload.wikimedia.org/wikipedia/commons/f/fa/Hamiltonian_Monte_Carlo.gif](https://colindcarroll.com/img/normal_leapfrog.png)
 
 
 **Description:** This two-hour workshop provides a practical introduction to Bayesian modeling using Stan, specifically designed for social science researchers. Participants will gain knowledge about Bayesian inference, learn how to specify and estimate models in Stan, and explore best practices for interpreting results. The workshop emphasizes practical applications, such as incorporating prior knowledge into analyses and creating models suitable for complex social science data. By the end of the session, attendees will have the foundational skills necessary to confidently apply Bayesian methods to their own research.
