@@ -280,7 +280,7 @@ class: inverse, center, middle
 
 DGP: 
 
-- `\(y_i \sim \text{Normal}(\overbrace{\beta_0 + \beta_1 x_i}^{\mu_i}, \overbrace{\delta_0 + \delta x_i}^{\sigma_i})\)`
+- `\(y_i \sim \text{Normal}(\overbrace{\beta_0 + \beta_1 x_i}^{\mu_i}, \overbrace{\delta_0 + \delta g_i}^{\sigma_i})\)`
 
 - `\(\beta_0 = 0.5, \quad \beta_1 = 1.1\)`
 
@@ -351,7 +351,7 @@ MLE formalizes this question. Steps:
 
 1) Decide on the underlying distribution generating the data. In this case, we can assume:
 
-   * Each observation `\(x_{i} \sim \text{Normal}(\mu_i = \beta_0 + \beta_1 x_i, \sigma)\)`, where X's are `\(iid\)`.
+   * Each observation `\(y_{i} \sim \text{Normal}(\mu_i = \beta_0 + \beta_1 x_i, \sigma)\)`, where y's are `\(iid\)`.
 
 --
 
@@ -939,7 +939,7 @@ All the material from the workshop will be stored and regularly updated in the `
 
 ![github](github.png)
 
-.bold[https://github.com/mebucca/bayes_workshop]
+.bold[https://github.com/mebucca/intro_bayes]
 
 ]
 
