@@ -1,0 +1,512 @@
+estudiantes <- data.frame(
+Nombre = c("Sebastián Enrique", "Angie", "Gabriel Amaru", "Francisco Alejandro", "Nicolás Ignacio", "Francisca Lía",
+"Rodrigo Cristhian", "Jeam Pool Luckas", "Ivonne Andrea", "Nicolás Andree", "Javiera Antonia", "Martín José",
+"Diego Andrés", "Valentina Ignacia"),
+Apellidos = c("Buzeta Salgado", "Carrasco Hernández", "Frías Rojas", "Gutiérrez Aguayo", "Molina Díaz",
+"Núñez Galleguillos", "Olagnier Pérez", "Rojas Carreño", "Silva Soto", "Torres Droguett",
+"Uarac Loayza", "Valenzuela Bravo", "Valenzuela Gómez", "Venegas Silva"),
+Correo = c("sebastianbuzetasalgado@gmail.com", "angiehernandez@uc.cl", "amaru1997frias@gmail.com",
+"franciscoocho1@gmail.com", "nico.mol9020@gmail.com", "fnunezgalleguillos@gmail.com",
+"rcolagnier@uc.cl", "jeampoolrc@gmail.com", "ia.silvasoto@gmail.com", "torresdroguett.n@gmail.com",
+"javierauaracloayza@gmail.com", "martn.valenzuela@uc.cl", "diegoval1210@gmail.com",
+"vgvenegas@uc.cl"),
+Tarea1 = c(7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0),
+Tarea2 = c(1.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 5.8, 7.0, 7.0, 7.0, 7.0, 7.0),
+Tarea3 = c(7.0, 7.0, 7.0, 7.0, 6.7, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0),
+Tarea4 = c(7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 1.0),
+Tarea5 = c(7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 6.7, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0),
+TrabajoFinal = c(5.8, 7.0, 6.2, 7.0, 5.5, 7.0, 7.0, 7.0, 6.1, 6.7, 7.0, 5.5, 7.0, 7.0),
+NotaFinal = c(5.8, 7.0, 6.7, 7.0, 6.4, 6.3, 6.3, 6.9, 6.5, 6.9, 7.0, 4.2, 7.0, 6.3)
+)
+# Función para enviar un correo a cada estudiante
+enviar_correo <- function(estudiante) {
+mensaje <- sprintf(
+"Hola %s %s,\n\nGracias por tu participación en el curso. Espero que haya sido una experiencia útil y enriquecedora para ti. Aquí están tus notas:\n\nTarea 1: %s\nTarea 2: %s\nTarea 3: %s\nTarea 4: %s\nTarea 5: %s\nTrabajo Final: %s\nNota Final: %s\n\nTe deseo mucho éxito en tus futuros proyectos. Si tienes alguna duda o comentario, no dudes en escribirme.\n\nSaludos cordiales,\nTu profesor.",
+estudiante$Nombre, estudiante$Apellidos,
+estudiante$Tarea1, estudiante$Tarea2, estudiante$Tarea3,
+estudiante$Tarea4, estudiante$Tarea5, estudiante$TrabajoFinal, estudiante$NotaFinal
+)
+send.mail(from = Sys.getenv("SMTP_USER"),
+to = estudiante$Correo,
+subject = "Tus notas finales",
+body = mensaje,
+smtp = list(host.name = "smtp.gmail.com", port = 465,  ssl=true,
+user.name = Sys.getenv("SMTP_USER"), passwd = Sys.getenv("SMTP_PASS"), tls = TRUE),
+authenticate = TRUE,
+send = TRUE)
+}
+# Enviar un correo a cada estudiante
+apply(estudiantes, 1, function(row) enviar_correo(as.list(row)))
+Sys.setenv(SMTP_USER = "mebucca@gmail.com")
+Sys.setenv(SMTP_PASS = "Fiesole810")
+library(mailR)
+# Datos de los estudiantes (puedes reemplazar esto por una lectura desde un archivo CSV si es necesario)
+estudiantes <- data.frame(
+Nombre = c("Sebastián Enrique", "Angie", "Gabriel Amaru", "Francisco Alejandro", "Nicolás Ignacio", "Francisca Lía",
+"Rodrigo Cristhian", "Jeam Pool Luckas", "Ivonne Andrea", "Nicolás Andree", "Javiera Antonia", "Martín José",
+"Diego Andrés", "Valentina Ignacia"),
+Apellidos = c("Buzeta Salgado", "Carrasco Hernández", "Frías Rojas", "Gutiérrez Aguayo", "Molina Díaz",
+"Núñez Galleguillos", "Olagnier Pérez", "Rojas Carreño", "Silva Soto", "Torres Droguett",
+"Uarac Loayza", "Valenzuela Bravo", "Valenzuela Gómez", "Venegas Silva"),
+Correo = c("sebastianbuzetasalgado@gmail.com", "angiehernandez@uc.cl", "amaru1997frias@gmail.com",
+"franciscoocho1@gmail.com", "nico.mol9020@gmail.com", "fnunezgalleguillos@gmail.com",
+"rcolagnier@uc.cl", "jeampoolrc@gmail.com", "ia.silvasoto@gmail.com", "torresdroguett.n@gmail.com",
+"javierauaracloayza@gmail.com", "martn.valenzuela@uc.cl", "diegoval1210@gmail.com",
+"vgvenegas@uc.cl"),
+Tarea1 = c(7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0),
+Tarea2 = c(1.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 5.8, 7.0, 7.0, 7.0, 7.0, 7.0),
+Tarea3 = c(7.0, 7.0, 7.0, 7.0, 6.7, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0),
+Tarea4 = c(7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 1.0),
+Tarea5 = c(7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 6.7, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0),
+TrabajoFinal = c(5.8, 7.0, 6.2, 7.0, 5.5, 7.0, 7.0, 7.0, 6.1, 6.7, 7.0, 5.5, 7.0, 7.0),
+NotaFinal = c(5.8, 7.0, 6.7, 7.0, 6.4, 6.3, 6.3, 6.9, 6.5, 6.9, 7.0, 4.2, 7.0, 6.3)
+)
+# Función para enviar un correo a cada estudiante
+enviar_correo <- function(estudiante) {
+mensaje <- sprintf(
+"Hola %s %s,\n\nGracias por tu participación en el curso. Espero que haya sido una experiencia útil y enriquecedora para ti. Aquí están tus notas:\n\nTarea 1: %s\nTarea 2: %s\nTarea 3: %s\nTarea 4: %s\nTarea 5: %s\nTrabajo Final: %s\nNota Final: %s\n\nTe deseo mucho éxito en tus futuros proyectos. Si tienes alguna duda o comentario, no dudes en escribirme.\n\nSaludos cordiales,\nTu profesor.",
+estudiante$Nombre, estudiante$Apellidos,
+estudiante$Tarea1, estudiante$Tarea2, estudiante$Tarea3,
+estudiante$Tarea4, estudiante$Tarea5, estudiante$TrabajoFinal, estudiante$NotaFinal
+)
+send.mail(from = Sys.getenv("SMTP_USER"),
+to = estudiante$Correo,
+subject = "Tus notas finales",
+body = mensaje,
+smtp = list(host.name = "smtp.gmail.com", port = 465,  tsl = TRUE,
+user.name = Sys.getenv("SMTP_USER"), passwd = Sys.getenv("SMTP_PASS"), tls = TRUE),
+authenticate = TRUE,
+send = TRUE)
+}
+# Enviar un correo a cada estudiante
+apply(estudiantes, 1, function(row) enviar_correo(as.list(row)))
+Sys.setenv(SMTP_USER = "mebucca@gmail.com")
+Sys.setenv(SMTP_PASS = "Fiesole810")
+library(mailR)
+# Datos de los estudiantes (puedes reemplazar esto por una lectura desde un archivo CSV si es necesario)
+estudiantes <- data.frame(
+Nombre = c("Sebastián Enrique", "Angie", "Gabriel Amaru", "Francisco Alejandro", "Nicolás Ignacio", "Francisca Lía",
+"Rodrigo Cristhian", "Jeam Pool Luckas", "Ivonne Andrea", "Nicolás Andree", "Javiera Antonia", "Martín José",
+"Diego Andrés", "Valentina Ignacia"),
+Apellidos = c("Buzeta Salgado", "Carrasco Hernández", "Frías Rojas", "Gutiérrez Aguayo", "Molina Díaz",
+"Núñez Galleguillos", "Olagnier Pérez", "Rojas Carreño", "Silva Soto", "Torres Droguett",
+"Uarac Loayza", "Valenzuela Bravo", "Valenzuela Gómez", "Venegas Silva"),
+Correo = c("sebastianbuzetasalgado@gmail.com", "angiehernandez@uc.cl", "amaru1997frias@gmail.com",
+"franciscoocho1@gmail.com", "nico.mol9020@gmail.com", "fnunezgalleguillos@gmail.com",
+"rcolagnier@uc.cl", "jeampoolrc@gmail.com", "ia.silvasoto@gmail.com", "torresdroguett.n@gmail.com",
+"javierauaracloayza@gmail.com", "martn.valenzuela@uc.cl", "diegoval1210@gmail.com",
+"vgvenegas@uc.cl"),
+Tarea1 = c(7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0),
+Tarea2 = c(1.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 5.8, 7.0, 7.0, 7.0, 7.0, 7.0),
+Tarea3 = c(7.0, 7.0, 7.0, 7.0, 6.7, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0),
+Tarea4 = c(7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 1.0),
+Tarea5 = c(7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 6.7, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0),
+TrabajoFinal = c(5.8, 7.0, 6.2, 7.0, 5.5, 7.0, 7.0, 7.0, 6.1, 6.7, 7.0, 5.5, 7.0, 7.0),
+NotaFinal = c(5.8, 7.0, 6.7, 7.0, 6.4, 6.3, 6.3, 6.9, 6.5, 6.9, 7.0, 4.2, 7.0, 6.3)
+)
+# Función para enviar un correo a cada estudiante
+enviar_correo <- function(estudiante) {
+mensaje <- sprintf(
+"Hola %s %s,\n\nGracias por tu participación en el curso. Espero que haya sido una experiencia útil y enriquecedora para ti. Aquí están tus notas:\n\nTarea 1: %s\nTarea 2: %s\nTarea 3: %s\nTarea 4: %s\nTarea 5: %s\nTrabajo Final: %s\nNota Final: %s\n\nTe deseo mucho éxito en tus futuros proyectos. Si tienes alguna duda o comentario, no dudes en escribirme.\n\nSaludos cordiales,\nTu profesor.",
+estudiante$Nombre, estudiante$Apellidos,
+estudiante$Tarea1, estudiante$Tarea2, estudiante$Tarea3,
+estudiante$Tarea4, estudiante$Tarea5, estudiante$TrabajoFinal, estudiante$NotaFinal
+)
+send.mail(from = Sys.getenv("SMTP_USER"),
+to = estudiante$Correo,
+subject = "Tus notas finales",
+body = mensaje,
+smtp = list(host.name = "smtp.gmail.com", port = 465,  ssl = TRUE,
+user.name = Sys.getenv("SMTP_USER"), passwd = Sys.getenv("SMTP_PASS"), tls = TRUE),
+authenticate = TRUE,
+send = TRUE)
+}
+# Enviar un correo a cada estudiante
+apply(estudiantes, 1, function(row) enviar_correo(as.list(row)))
+library(mailR)
+# Datos de los estudiantes
+estudiantes <- data.frame(
+Nombre = c("Sebastián Enrique", "Angie", "Gabriel Amaru", "Francisco Alejandro", "Nicolás Ignacio", "Francisca Lía",
+"Rodrigo Cristhian", "Jeam Pool Luckas", "Ivonne Andrea", "Nicolás Andree", "Javiera Antonia", "Martín José",
+"Diego Andrés", "Valentina Ignacia"),
+Apellidos = c("Buzeta Salgado", "Carrasco Hernández", "Frías Rojas", "Gutiérrez Aguayo", "Molina Díaz",
+"Núñez Galleguillos", "Olagnier Pérez", "Rojas Carreño", "Silva Soto", "Torres Droguett",
+"Uarac Loayza", "Valenzuela Bravo", "Valenzuela Gómez", "Venegas Silva"),
+Correo = c("sebastianbuzetasalgado@gmail.com", "angiehernandez@uc.cl", "amaru1997frias@gmail.com",
+"franciscoocho1@gmail.com", "nico.mol9020@gmail.com", "fnunezgalleguillos@gmail.com",
+"rcolagnier@uc.cl", "jeampoolrc@gmail.com", "ia.silvasoto@gmail.com", "torresdroguett.n@gmail.com",
+"javierauaracloayza@gmail.com", "martn.valenzuela@uc.cl", "diegoval1210@gmail.com",
+"vgvenegas@uc.cl"),
+Tarea1 = c(7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0),
+Tarea2 = c(1.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 5.8, 7.0, 7.0, 7.0, 7.0, 7.0),
+Tarea3 = c(7.0, 7.0, 7.0, 7.0, 6.7, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0),
+Tarea4 = c(7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 1.0),
+Tarea5 = c(7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 6.7, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0),
+TrabajoFinal = c(5.8, 7.0, 6.2, 7.0, 5.5, 7.0, 7.0, 7.0, 6.1, 6.7, 7.0, 5.5, 7.0, 7.0),
+NotaFinal = c(5.8, 7.0, 6.7, 7.0, 6.4, 6.3, 6.3, 6.9, 6.5, 6.9, 7.0, 4.2, 7.0, 6.3)
+)
+# Función para enviar un correo a cada estudiante
+enviar_correo <- function(estudiante) {
+mensaje <- sprintf(
+"Hola %s %s,\n\nGracias por tu participación en el curso. Espero que haya sido una experiencia útil y enriquecedora para ti. Aquí están tus notas:\n\nTarea 1: %.1f\nTarea 2: %.1f\nTarea 3: %.1f\nTarea 4: %.1f\nTarea 5: %.1f\nTrabajo Final: %.1f\nNota Final: %.1f\n\nTe deseo mucho éxito en tus futuros proyectos. Si tienes alguna duda o comentario, no dudes en escribirme.\n\nSaludos cordiales,\nTu profesor.",
+estudiante$Nombre, estudiante$Apellidos,
+estudiante$Tarea1, estudiante$Tarea2, estudiante$Tarea3,
+estudiante$Tarea4, estudiante$Tarea5, estudiante$TrabajoFinal, estudiante$NotaFinal
+)
+# Enviar correo
+send.mail(from = "mebucca@gmail.com",
+to = estudiante$Correo,
+subject = "Tus notas finales",
+body = mensaje,
+smtp = list(host.name = "smtp.gmail.com",
+port = 587,
+user.name = "mebucca@gmail.com",
+passwd = "tu_app_password",
+tls = TRUE),
+authenticate = TRUE,
+send = TRUE)
+}
+# Iterar sobre cada estudiante y enviar correos
+apply(estudiantes, 1, function(row) enviar_correo(as.list(row)))
+library(mailR)
+# Datos de los estudiantes
+estudiantes <- data.frame(
+Nombre = c("Sebastián Enrique", "Angie", "Gabriel Amaru", "Francisco Alejandro", "Nicolás Ignacio", "Francisca Lía",
+"Rodrigo Cristhian", "Jeam Pool Luckas", "Ivonne Andrea", "Nicolás Andree", "Javiera Antonia", "Martín José",
+"Diego Andrés", "Valentina Ignacia"),
+Apellidos = c("Buzeta Salgado", "Carrasco Hernández", "Frías Rojas", "Gutiérrez Aguayo", "Molina Díaz",
+"Núñez Galleguillos", "Olagnier Pérez", "Rojas Carreño", "Silva Soto", "Torres Droguett",
+"Uarac Loayza", "Valenzuela Bravo", "Valenzuela Gómez", "Venegas Silva"),
+Correo = c("sebastianbuzetasalgado@gmail.com", "angiehernandez@uc.cl", "amaru1997frias@gmail.com",
+"franciscoocho1@gmail.com", "nico.mol9020@gmail.com", "fnunezgalleguillos@gmail.com",
+"rcolagnier@uc.cl", "jeampoolrc@gmail.com", "ia.silvasoto@gmail.com", "torresdroguett.n@gmail.com",
+"javierauaracloayza@gmail.com", "martn.valenzuela@uc.cl", "diegoval1210@gmail.com",
+"vgvenegas@uc.cl"),
+Tarea1 = c(7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0),
+Tarea2 = c(1.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 5.8, 7.0, 7.0, 7.0, 7.0, 7.0),
+Tarea3 = c(7.0, 7.0, 7.0, 7.0, 6.7, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0),
+Tarea4 = c(7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 1.0),
+Tarea5 = c(7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 6.7, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0),
+TrabajoFinal = c(5.8, 7.0, 6.2, 7.0, 5.5, 7.0, 7.0, 7.0, 6.1, 6.7, 7.0, 5.5, 7.0, 7.0),
+NotaFinal = c(5.8, 7.0, 6.7, 7.0, 6.4, 6.3, 6.3, 6.9, 6.5, 6.9, 7.0, 4.2, 7.0, 6.3)
+)
+# Función para enviar un correo a cada estudiante
+enviar_correo <- function(estudiante) {
+mensaje <- sprintf(
+"Hola %s %s,\n\nGracias por tu participación en el curso. Espero que haya sido una experiencia útil y enriquecedora para ti. Aquí están tus notas:\n\nTarea 1: %s\nTarea 2: %s\nTarea 3: %s\nTarea 4: %s\nTarea 5: %s\nTrabajo Final: %s\nNota Final: %s\n\nTe deseo mucho éxito en tus futuros proyectos. Si tienes alguna duda o comentario, no dudes en escribirme.\n\nSaludos cordiales,\nTu profesor.",
+estudiante$Nombre, estudiante$Apellidos,
+estudiante$Tarea1, estudiante$Tarea2, estudiante$Tarea3,
+estudiante$Tarea4, estudiante$Tarea5, estudiante$TrabajoFinal, estudiante$NotaFinal
+)
+# Enviar correo
+send.mail(from = "mebucca@gmail.com",
+to = estudiante$Correo,
+subject = "Tus notas finales",
+body = mensaje,
+smtp = list(host.name = "smtp.gmail.com",
+port = 587,
+user.name = "mebucca@gmail.com",
+passwd = "Fiesole810",
+tls = TRUE),
+authenticate = TRUE,
+send = TRUE)
+}
+# Iterar sobre cada estudiante y enviar correos
+apply(estudiantes, 1, function(row) enviar_correo(as.list(row)))
+install.packages("blastula")
+library(blastula)
+# Create the email function
+enviar_correo <- function(estudiante) {
+# Crear el cuerpo del mensaje
+mensaje <- compose_email(
+body = md(glue::glue("
+Hola **{estudiante$Nombre} {estudiante$Apellidos}**,
+Gracias por tu participación en el curso. Espero que haya sido una experiencia útil y enriquecedora para ti. Aquí están tus notas:
+- **Tarea 1:** {estudiante$Tarea1}
+- **Tarea 2:** {estudiante$Tarea2}
+- **Tarea 3:** {estudiante$Tarea3}
+- **Tarea 4:** {estudiante$Tarea4}
+- **Tarea 5:** {estudiante$Tarea5}
+- **Trabajo Final:** {estudiante$TrabajoFinal}
+- **Nota Final:** {estudiante$NotaFinal}
+Te deseo mucho éxito en tus futuros proyectos. Si tienes alguna duda o comentario, no dudes en escribirme.
+Saludos cordiales,
+**Tu profesor**
+"))
+)
+# Enviar el correo
+smtp_send(
+email = mensaje,
+from = "mebucca@gmail.com",
+to = estudiante$Correo,
+subject = "Tus notas finales",
+credentials = creds(
+user = "mebucca@gmail.com",
+password = "jgzu gkqk gptr owbw", # Use your app-specific password
+provider = "gmail"
+)
+)
+}
+# Datos de los estudiantes
+estudiantes <- data.frame(
+Nombre = c("Sebastián Enrique", "Angie", "Gabriel Amaru", "Francisco Alejandro", "Nicolás Ignacio", "Francisca Lía",
+"Rodrigo Cristhian", "Jeam Pool Luckas", "Ivonne Andrea", "Nicolás Andree", "Javiera Antonia", "Martín José",
+"Diego Andrés", "Valentina Ignacia"),
+Apellidos = c("Buzeta Salgado", "Carrasco Hernández", "Frías Rojas", "Gutiérrez Aguayo", "Molina Díaz",
+"Núñez Galleguillos", "Olagnier Pérez", "Rojas Carreño", "Silva Soto", "Torres Droguett",
+"Uarac Loayza", "Valenzuela Bravo", "Valenzuela Gómez", "Venegas Silva"),
+Correo = c("sebastianbuzetasalgado@gmail.com", "angiehernandez@uc.cl", "amaru1997frias@gmail.com",
+"franciscoocho1@gmail.com", "nico.mol9020@gmail.com", "fnunezgalleguillos@gmail.com",
+"rcolagnier@uc.cl", "jeampoolrc@gmail.com", "ia.silvasoto@gmail.com", "torresdroguett.n@gmail.com",
+"javierauaracloayza@gmail.com", "martn.valenzuela@uc.cl", "diegoval1210@gmail.com",
+"vgvenegas@uc.cl"),
+Tarea1 = c(7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0),
+Tarea2 = c(1.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 5.8, 7.0, 7.0, 7.0, 7.0, 7.0),
+Tarea3 = c(7.0, 7.0, 7.0, 7.0, 6.7, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0),
+Tarea4 = c(7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 1.0),
+Tarea5 = c(7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 6.7, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0),
+TrabajoFinal = c(5.8, 7.0, 6.2, 7.0, 5.5, 7.0, 7.0, 7.0, 6.1, 6.7, 7.0, 5.5, 7.0, 7.0),
+NotaFinal = c(5.8, 7.0, 6.7, 7.0, 6.4, 6.3, 6.3, 6.9, 6.5, 6.9, 7.0, 4.2, 7.0, 6.3)
+)
+# Iterar sobre cada estudiante y enviar correos
+apply(estudiantes, 1, function(row) enviar_correo(as.list(row)))
+library(blastula)
+# Create the email function
+enviar_correo <- function(estudiante) {
+# Crear el cuerpo del mensaje
+mensaje <- compose_email(
+body = md(glue::glue("
+Hola **{estudiante$Nombre} {estudiante$Apellidos}**,
+Gracias por tu participación en el curso. Espero que haya sido una experiencia útil y enriquecedora para ti. Aquí están tus notas:
+- **Tarea 1:** {estudiante$Tarea1}
+- **Tarea 2:** {estudiante$Tarea2}
+- **Tarea 3:** {estudiante$Tarea3}
+- **Tarea 4:** {estudiante$Tarea4}
+- **Tarea 5:** {estudiante$Tarea5}
+- **Trabajo Final:** {estudiante$TrabajoFinal}
+- **Nota Final:** {estudiante$NotaFinal}
+Te deseo mucho éxito en tus futuros proyectos. Si tienes alguna duda o comentario, no dudes en escribirme.
+Saludos cordiales,
+**Tu profesor**
+"))
+)
+# Enviar el correo
+smtp_send(
+email = mensaje,
+from = "mebucca@gmail.com",
+to = estudiante$Correo,
+subject = "Tus notas finales",
+credentials = creds(
+user = "mebucca@gmail.com",
+password = "jgzu gkqk gptr owbw", # Use your app-specific password
+provider = "gmail"
+)
+)
+}
+# Datos de los estudiantes
+estudiantes <- data.frame(
+Nombre = c("Sebastián Enrique", "Angie", "Gabriel Amaru", "Francisco Alejandro", "Nicolás Ignacio", "Francisca Lía",
+"Rodrigo Cristhian", "Jeam Pool Luckas", "Ivonne Andrea", "Nicolás Andree", "Javiera Antonia", "Martín José",
+"Diego Andrés", "Valentina Ignacia"),
+Apellidos = c("Buzeta Salgado", "Carrasco Hernández", "Frías Rojas", "Gutiérrez Aguayo", "Molina Díaz",
+"Núñez Galleguillos", "Olagnier Pérez", "Rojas Carreño", "Silva Soto", "Torres Droguett",
+"Uarac Loayza", "Valenzuela Bravo", "Valenzuela Gómez", "Venegas Silva"),
+Correo = c("sebastianbuzetasalgado@gmail.com", "angiehernandez@uc.cl", "amaru1997frias@gmail.com",
+"franciscoocho1@gmail.com", "nico.mol9020@gmail.com", "fnunezgalleguillos@gmail.com",
+"rcolagnier@uc.cl", "jeampoolrc@gmail.com", "ia.silvasoto@gmail.com", "torresdroguett.n@gmail.com",
+"javierauaracloayza@gmail.com", "martn.valenzuela@uc.cl", "diegoval1210@gmail.com",
+"vgvenegas@uc.cl"),
+Tarea1 = c(7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0),
+Tarea2 = c(1.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 5.8, 7.0, 7.0, 7.0, 7.0, 7.0),
+Tarea3 = c(7.0, 7.0, 7.0, 7.0, 6.7, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0),
+Tarea4 = c(7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 1.0),
+Tarea5 = c(7.0, 7.0, 7.0, 7.0, 7.0, 1.0, 7.0, 6.7, 7.0, 7.0, 7.0, 1.0, 7.0, 7.0),
+TrabajoFinal = c(5.8, 7.0, 6.2, 7.0, 5.5, 7.0, 7.0, 7.0, 6.1, 6.7, 7.0, 5.5, 7.0, 7.0),
+NotaFinal = c(5.8, 7.0, 6.7, 7.0, 6.4, 6.3, 6.3, 6.9, 6.5, 6.9, 7.0, 4.2, 7.0, 6.3)
+)
+# Iterar sobre cada estudiante y enviar correos
+apply(estudiantes, 1, function(row) enviar_correo(as.list(row)))
+xaringan:::inf_mr()
+install.packages("hrbrthemes")
+xaringan:::inf_mr()
+]
+y
+xaringan:::inf_mr()
+sqrt(0.2503644)
+new_y
+xaringan:::inf_mr()
+# Importar los datos
+paes_2023 <- read_csv("Library/Mobile Documents/com~apple~CloudDocs/Teaching/ISUC/2024_1_nucleo_r2hs/data/paes_2023.csv")
+# Cargar paquetes necesarios
+library("tidyverse")
+# Importar los datos
+paes_2023 <- read_csv("Library/Mobile Documents/com~apple~CloudDocs/Teaching/ISUC/2024_1_nucleo_r2hs/data/paes_2023.csv")
+# Cargar paquetes necesarios
+library("tidyverse")
+# Importar los datos
+paes_2023 <- read_csv("Library/Mobile Documents/com~apple~CloudDocs/Teaching/ISUC/2024_1_nucleo_r2hs/data/paes_2023.csv")
+# Cargar paquetes necesarios
+library("tidyverse")
+# Importar los datos
+paes_2023 <- read_csv("Library/Mobile Documents/com~apple~CloudDocs/Teaching/ISUC/2024_1_nucleo_r2hs/data/paes_2023.csv")
+# Cargar paquetes necesarios
+library("tidyverse")
+# Importar los datos
+paes_2023 <- read_csv("Library/Mobile Documents/com~apple~CloudDocs/Teaching/ISUC/2024_1_nucleo_r2hs/data/paes_2023.csv")
+library("tidyverse")
+# Importar los datos
+paes_2023 <- read_csv("Library/Mobile Documents/com~apple~CloudDocs/Teaching/ISUC/2024_1_nucleo_r2hs/data/paes_2023.csv")
+# Cargar paquetes necesarios
+library("tidyverse")
+# Importar los datos
+paes_2023 <- read_csv("Library/Mobile Documents/com~apple~CloudDocs/Teaching/ISUC/2024_1_nucleo_r2hs/data/paes_2023.csv")
+# Cargar paquetes necesarios
+library("tidyverse")
+# Importar los datos
+paes_2023 <- read_csv("/Users/mauricio/Library/Mobile Documents/com~apple~CloudDocs/Teaching/ISUC/2024_1_nucleo_r4hs/data/paes_2023.csv")
+# Explorar resultados
+resultados_comuna_dependencia <- paes_2023 %>%
+mutate(puntaje_total = (lenguaje + matematicas_1 + matematicas_2)/3 ) %>%
+group_by(comuna, dependencia) %>%
+summarise(promedio_puntaje_total = mean(puntaje_total))
+# Explorar resultados
+resultados_comuna_dependencia %>% arrange(desc(promedio_puntaje_total)) %>% print(n=100)
+# Visualizar datos
+resultados_comuna_dependencia %>% ggplot(aes(
+y = reorder(interaction(comuna, dependencia), promedio_puntaje_total),
+x = promedio_puntaje_total,
+fill = factor(dependencia)
+)) +
+geom_bar(stat = "identity") +
+theme(axis.text.y = element_text(size = 2)) +
+labs(x="Promedio Puntaje Total", y="Dependencia por comuna", fill = "Dependencia")
+paes_2023
+xaringan:::inf_mr()
+xaringan:::inf_mr()
+xaringan:::inf_mr()
+xaringan:::inf_mr()
+xaringan:::inf_mr()
+xaringan:::inf_mr()
+xaringan:::inf_mr()
+xaringan:::inf_mr()
+xaringan:::inf_mr()
+.pull-right[
+**MCMC + Metropolis-Hasting**
+xaringan:::inf_mr()
+g    <- sample(c(0,1), size=10^5, replace=TRUE)
+x    <- rnorm(n=10^5,mean=0,sd=1)
+g    <- sample(c(0,1), size=10^5, replace=TRUE)
+alpha <- 1.1; beta <- 0.7
+sigma <- 0.3 + g*0.4
+mu   <- alpha + beta*x
+y    <- mu + rnorm(n=10^5,mean=0,sd=sigma)
+g
+sigma
+plot <- tibble(x=x,y=y,g=g) %>%
+ggplot(aes(x=x, y=y, colour = g)) +
+geom_point(color = primary_color, size=2.5, alpha=0.05) +
+geom_smooth(method='lm', formula= y ~ x, size=1.5, color=secondary_color, se=FALSE) + # Added se=FALSE to remove shaded region
+theme_minimal() +
+theme(
+legend.position="none",
+axis.text.y = element_text(size = 22, color = "black"),
+axis.text.x = element_text(size = 22, color = "black"),
+axis.title.y = element_text(size = 24, color = "black"),
+axis.title.x = element_text(size = 24, color = "black"),
+panel.border = element_rect(color = "black", fill = NA, linewidth = 1)
+)
+print(plot)
+plot <- tibble(x=x,y=y,g=g) %>%
+ggplot(aes(x=x, y=y, colour = factor(g))) +
+geom_point(color = primary_color, size=2.5, alpha=0.05) +
+geom_smooth(method='lm', formula= y ~ x, size=1.5, color=secondary_color, se=FALSE) + # Added se=FALSE to remove shaded region
+theme_minimal() +
+theme(
+legend.position="none",
+axis.text.y = element_text(size = 22, color = "black"),
+axis.text.x = element_text(size = 22, color = "black"),
+axis.title.y = element_text(size = 24, color = "black"),
+axis.title.x = element_text(size = 24, color = "black"),
+panel.border = element_rect(color = "black", fill = NA, linewidth = 1)
+)
+print(plot)
+plot <- tibble(x=x,y=y,g=g) %>%
+ggplot(aes(x=x, y=y, colour = factor(g))) +
+geom_point(size=2.5, alpha=0.05) +
+geom_smooth(method='lm', formula= y ~ x, size=1.5, color=secondary_color, se=FALSE) + # Added se=FALSE to remove shaded region
+theme_minimal() +
+theme(
+legend.position="none",
+axis.text.y = element_text(size = 22, color = "black"),
+axis.text.x = element_text(size = 22, color = "black"),
+axis.title.y = element_text(size = 24, color = "black"),
+axis.title.x = element_text(size = 24, color = "black"),
+panel.border = element_rect(color = "black", fill = NA, linewidth = 1)
+)
+print(plot)
+plot <- tibble(x=x,y=y,g=g) %>%
+ggplot(aes(x=x, y=y, colour = factor(g))) +
+geom_point(size=2.5, alpha=0.2) +
+geom_smooth(method='lm', formula= y ~ x, size=1.5, color=secondary_color, se=FALSE) + # Added se=FALSE to remove shaded region
+theme_minimal() +
+theme(
+legend.position="none",
+axis.text.y = element_text(size = 22, color = "black"),
+axis.text.x = element_text(size = 22, color = "black"),
+axis.title.y = element_text(size = 24, color = "black"),
+axis.title.x = element_text(size = 24, color = "black"),
+panel.border = element_rect(color = "black", fill = NA, linewidth = 1)
+)
+print(plot)
+plot <- tibble(x=x,y=y,g=g) %>%
+ggplot(aes(x=x, y=y, colour = factor(g))) +
+geom_point(size=2.5, alpha=0.2) +
+geom_smooth(method='lm', formula= y ~ x, size=1.5, color=link_color, se=FALSE) + # Added se=FALSE to remove shaded region
+theme_minimal() +
+theme(
+legend.position="none",
+axis.text.y = element_text(size = 22, color = "black"),
+axis.text.x = element_text(size = 22, color = "black"),
+axis.title.y = element_text(size = 24, color = "black"),
+axis.title.x = element_text(size = 24, color = "black"),
+panel.border = element_rect(color = "black", fill = NA, linewidth = 1)
+)
+plot <- tibble(x=x,y=y,g=g) %>%
+ggplot(aes(x=x, y=y, colour = factor(g))) +
+geom_point(size=2.5, alpha=0.2) +
+geom_smooth(method='lm', formula= y ~ x, size=1.5, color=link_color, se=FALSE) + # Added se=FALSE to remove shaded region
+theme_minimal() +
+theme(
+legend.position="none",
+axis.text.y = element_text(size = 22, color = "black"),
+axis.text.x = element_text(size = 22, color = "black"),
+axis.title.y = element_text(size = 24, color = "black"),
+axis.title.x = element_text(size = 24, color = "black"),
+panel.border = element_rect(color = "black", fill = NA, linewidth = 1)
+)
+plot <- tibble(x=x,y=y,g=g) %>%
+ggplot(aes(x=x, y=y, colour = factor(g))) +
+geom_point(size=2.5, alpha=0.2) +
+geom_smooth(method='lm', formula= y ~ x, size=1.5, color=secondary_color, se=FALSE) + # Added se=FALSE to remove shaded region
+theme_minimal() +
+theme(
+legend.position="none",
+axis.text.y = element_text(size = 22, color = "black"),
+axis.text.x = element_text(size = 22, color = "black"),
+axis.title.y = element_text(size = 24, color = "black"),
+axis.title.x = element_text(size = 24, color = "black"),
+panel.border = element_rect(color = "black", fill = NA, linewidth = 1)
+)
+xaringan:::inf_mr()
+x    <- rnorm(n=10^5,mean=0,sd=1)
+g    <- sample(c(0,1), size=10^5, replace=T)
+beta0  <- 0.5; beta1 <- 1.1
+delta0 <- 1; delta1 <- 0.4
+mu     <- beta0 + beta1*x
+sigma  <- delta0 + delta1*g
+y    <- rnorm(n=10^5,mean=mu,sd=sigma)
+our_lm_mle
+summary(our_lm_mle) -> a
+s
+a$deviance
+a$dispersion
